@@ -1,10 +1,10 @@
 import json
 
-
 class Oval(object):
     DEFAULT_BORDER_WIDTH = 1
     DEFAULT_BORDER_COLOR = "white"
     DEFAULT_FILL_COLOR = "green"
+    AVALIABLE_CORLORS = {"white", "black", "red", "green", "blue", "cyan", "yellow"}
 
     def __init__(self, top_left_x, top_left_y, bottom_right_x, bottom_right_y,
                     fill_color=DEFAULT_FILL_COLOR, border_color=DEFAULT_BORDER_COLOR, border_width=DEFAULT_BORDER_WIDTH):
@@ -15,6 +15,18 @@ class Oval(object):
         self.fill_color = fill_color
         self.border_color = border_color
         self.border_width = border_width
+        self.check_is_valid()
+
+    # cannot become invalid after construction
+    def check_is_valid(self):
+        assert type(self.top_left_x) == int
+        assert type(self.top_left_y) == int
+        assert type(self.bottom_right_x) == int
+        assert type(self.bottom_right_y) == int
+        assert self.fill_color in Oval.AVALIABLE_CORLORS
+        assert self.border_color in Oval.AVALIABLE_CORLORS
+        assert type(self.border_width) == int
+
 
     @staticmethod
     def create_from_string(serialized_oval):
