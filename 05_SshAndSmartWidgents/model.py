@@ -37,6 +37,28 @@ class Oval(object):
         self.bottom_right_y += dy
 
 
+    @staticmethod
+    def handle_resize(coord_from, coord_to, coord_min, coord_max):
+        if coord_from > coord_min:
+            if coord_to > coord_min:
+                coord_max = coord_to
+            else:
+                coord_max = coord_min
+                coord_min = coord_to
+        else:
+            if coord_to < coord_max:
+                coord_min = coord_to
+            else:
+                coord_min = coord_max
+                coord_max = coord_to
+        return coord_min, coord_max
+
+
+    def resize_to(self, from_x, to_x, from_y, to_y):
+        self.top_left_x, self.bottom_right_x = self.handle_resize(from_x, to_x, self.top_left_x, self.bottom_right_x)
+        self.top_left_y, self.bottom_right_y = self.handle_resize(from_y, to_y, self.top_left_y, self.bottom_right_y)
+
+
 class ObjectsStorage(object):
     def __init__(self):
         self.stored_objects = []
@@ -46,8 +68,14 @@ class ObjectsStorage(object):
         self.hover_x = None
         self.hover_y = None
 
+        # handle to last added object unitl it stop resizing
+        self.just_added = None
+
 
     def append(self, new_object):
+        self.clicked = new_object
+        self.just_added = new_object
+        self.set_hover_pos(new_object.top_left_x, new_object.top_left_y)
         self.stored_objects.append(new_object)
 
 
@@ -81,4 +109,11 @@ class ObjectsStorage(object):
         self.hover_x = hover_x
         self.hover_y = hover_y
 
+
+    def get_just_added(self):
+        return self.just_added
+
+
+    def forget_just_added(self):
+        self.just_added = None
 
