@@ -49,3 +49,16 @@ class ObjectsViewController(object):
         self.objects_storage.append(oval)
         self.redraw_callback()
 
+
+class TextsViewController(object):
+    def __init__(self, texts_storage, objects_storage, redraw_callback):
+        self.texts_storage = texts_storage
+        self.objects_storage = objects_storage
+        self.redraw_callback = redraw_callback
+
+
+    def apply(self, texts):
+        self.texts_storage.set_texts(texts)
+        self.objects_storage.update(self.texts_storage)
+        self.redraw_callback()
+

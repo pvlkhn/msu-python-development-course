@@ -1,5 +1,5 @@
 import tkinter
-from controller import ObjectsViewController
+from controller import ObjectsViewController, TextsViewController
 
 def singleton(class_):
     instances = {}
@@ -19,7 +19,7 @@ class EditorWindow(tkinter.Frame):
     def __init__(self, objects_storage, texts_storage, master=get_master()):
         super().__init__(master=master)
 
-        self.left_part = TextView(texts_storage=texts_storage, redraw_callback=self.redraw)
+        self.left_part = TextView(texts_storage=texts_storage,  objects_storage=objects_storage, redraw_callback=self.redraw)
         self.right_part = ObjectsView(texts_storage=texts_storage, objects_storage=objects_storage, redraw_callback=self.redraw)
 
         self.redraw()
@@ -34,16 +34,23 @@ class EditorWindow(tkinter.Frame):
 
 
 class TextView(tkinter.Text):
-    def __init__(self, texts_storage, redraw_callback, master=get_master()):
+    def __init__(self, texts_storage, objects_storage, redraw_callback, master=get_master()):
         super().__init__(master=master)
         self.texts_storage = texts_storage
         self.redraw_callback = redraw_callback
+        self.controller = TextsViewController(texts_storage=texts_storage, objects_storage=objects_storage, redraw_callback=redraw_callback)
+        self.apply_button = tkinter.Button(master, text="Apply", command=self.apply_clicked)
 
 
     def redraw(self):
         self.delete("1.0", "end")
         for stored_text in self.texts_storage:
             self.insert(tkinter.END, stored_text + "\n")
+        self.apply_button.grid(row=1, column=0)
+
+    def apply_clicked(self):
+        texts = self.get("1.0", tkinter.END)
+        self.controller.apply(texts)
 
 
 class ObjectsView(tkinter.Canvas):

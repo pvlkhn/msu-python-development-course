@@ -79,6 +79,12 @@ class ObjectsStorage(object):
         self.objects.append(new_object)
 
 
+    def update(self, texts_storage):
+        self.objects = []
+        for text in texts_storage:
+            self.objects.append(Oval.create_from_string(text))
+
+
     def __iter__(self):
         for stored_object in self.objects:
             self.current_iter_object = stored_object
@@ -133,4 +139,6 @@ class TextsStorage(object):
         for stored_object in objects_storage:
             self.texts.append(stored_object.serialize_to_string())
 
+    def set_texts(self, texts):
+        self.texts = texts.strip().split("\n")
 
