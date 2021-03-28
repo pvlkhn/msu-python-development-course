@@ -3,48 +3,35 @@ from tkinter import font
 from controller import ObjectsViewController, TextsViewController
 
 
-def singleton(class_):
-    instances = {}
-
-    def getinstance(*args, **kwargs):
-        if class_ not in instances:
-            instances[class_] = class_(*args, **kwargs)
-        return instances[class_]
-    return getinstance
-
-
-@singleton
-def get_master():
-    return tkinter.Tk()
-
-
 class EditorWindow(tkinter.Frame):
-    def __init__(self, objects_storage, texts_storage, master=get_master()):
+    def __init__(self, objects_storage, texts_storage, master):
         super().__init__(master=master)
 
         self.left_part = TextView(
             texts_storage=texts_storage,
             objects_storage=objects_storage,
-            redraw_callback=self.redraw
+            redraw_callback=self.redraw,
+            master=master
         )
         self.right_part = ObjectsView(
             texts_storage=texts_storage,
             objects_storage=objects_storage,
-            redraw_callback=self.redraw
+            redraw_callback=self.redraw,
+            master=master
         )
 
         self.redraw()
 
     def redraw(self):
         self.left_part.redraw()
-        self.left_part.grid(row=0, column=0)
+        self.left_part.grid(row=0, column=0, sticky="NWSE")
 
         self.right_part.redraw()
-        self.right_part.grid(row=0, column=1)
+        self.right_part.grid(row=0, column=1, rowspan=2, sticky="NWSE")
 
 
 class TextView(tkinter.Text):
-    def __init__(self, texts_storage, objects_storage, redraw_callback, master=get_master()):
+    def __init__(self, texts_storage, objects_storage, redraw_callback, master):
         super().__init__(master=master, font=font.Font(family="Consolas", size=14, weight="normal"))
         self.texts_storage = texts_storage
         self.redraw_callback = redraw_callback
@@ -62,7 +49,7 @@ class TextView(tkinter.Text):
         for stored_text in self.texts_storage:
             is_valid = self.texts_storage.is_text_valid(stored_text);
             self.insert(tkinter.END, stored_text  + "\n", '' if is_valid else 'warning')
-        self.apply_button.grid(row=1, column=0)
+        self.apply_button.grid(row=1, column=0, sticky="WE")
 
     def apply_clicked(self):
         texts = self.get("1.0", tkinter.END)
@@ -70,7 +57,7 @@ class TextView(tkinter.Text):
 
 
 class ObjectsView(tkinter.Canvas):
-    def __init__(self, texts_storage, objects_storage, redraw_callback, master=get_master()):
+    def __init__(self, texts_storage, objects_storage, redraw_callback, master):
         super().__init__(master=master)
         self.objects_storage = objects_storage
 
