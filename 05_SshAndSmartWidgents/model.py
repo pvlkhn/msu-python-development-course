@@ -77,15 +77,14 @@ class ObjectsStorage(object):
             try:
                 self.objects.append(Oval.create_from_string(text))
             except:
-                texts_storage.set_currrent_text_invalid()
+                texts_storage.set_text_invalid(text)
 
     def __iter__(self):
         for stored_object in self.objects:
-            self.current_iter_object = stored_object
             yield stored_object
 
-    def set_clicked(self, clicked_x, clicked_y):
-        self.clicked = self.current_iter_object
+    def set_clicked(self, clicked_object, clicked_x, clicked_y):
+        self.clicked = clicked_object
         self.hover_x = clicked_x
         self.hover_y = clicked_y
 
@@ -114,12 +113,10 @@ class ObjectsStorage(object):
 class TextsStorage(object):
     def __init__(self):
         self.texts = []
-        self.invalid_texts = {}
-        self.current_text = None
+        self.invalid_texts = set()
 
     def __iter__(self):
         for stored_text in self.texts:
-            self.current_text = stored_text
             yield stored_text
 
     def is_text_valid(self, text):
@@ -127,12 +124,12 @@ class TextsStorage(object):
 
     def update(self, objects_storage):
         self.texts = []
-        self.invalid_texts = []
+        self.invalid_texts = set()
         for stored_object in objects_storage:
             self.texts.append(stored_object.serialize_to_string())
 
     def set_texts(self, texts):
         self.texts = texts.strip().split("\n")
 
-    def set_currrent_text_invalid(self):
-        self.invalid_texts.append(self.current_text)
+    def set_text_invalid(self, text):
+        self.invalid_texts.add(text)
