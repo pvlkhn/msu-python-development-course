@@ -91,5 +91,7 @@ class ObjectsView(tkinter.Canvas):
                 stored_object.top_left_y,
                 stored_object.bottom_right_x,
                 stored_object.bottom_right_y,
-                {}
+                fill=stored_object.fill_color,
+                outline=stored_object.border_color,
+                width=stored_object.border_width
             )
