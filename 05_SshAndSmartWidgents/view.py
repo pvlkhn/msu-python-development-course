@@ -1,8 +1,10 @@
 import tkinter
 from controller import ObjectsViewController, TextsViewController
 
+
 def singleton(class_):
     instances = {}
+
     def getinstance(*args, **kwargs):
         if class_ not in instances:
             instances[class_] = class_(*args, **kwargs)
@@ -19,11 +21,18 @@ class EditorWindow(tkinter.Frame):
     def __init__(self, objects_storage, texts_storage, master=get_master()):
         super().__init__(master=master)
 
-        self.left_part = TextView(texts_storage=texts_storage,  objects_storage=objects_storage, redraw_callback=self.redraw)
-        self.right_part = ObjectsView(texts_storage=texts_storage, objects_storage=objects_storage, redraw_callback=self.redraw)
+        self.left_part = TextView(
+            texts_storage=texts_storage,
+            objects_storage=objects_storage,
+            redraw_callback=self.redraw
+        )
+        self.right_part = ObjectsView(
+            texts_storage=texts_storage,
+            objects_storage=objects_storage,
+            redraw_callback=self.redraw
+        )
 
         self.redraw()
-
 
     def redraw(self):
         self.left_part.redraw()
@@ -38,9 +47,12 @@ class TextView(tkinter.Text):
         super().__init__(master=master)
         self.texts_storage = texts_storage
         self.redraw_callback = redraw_callback
-        self.controller = TextsViewController(texts_storage=texts_storage, objects_storage=objects_storage, redraw_callback=redraw_callback)
+        self.controller = TextsViewController(
+            texts_storage=texts_storage,
+            objects_storage=objects_storage,
+            redraw_callback=redraw_callback
+        )
         self.apply_button = tkinter.Button(master, text="Apply", command=self.apply_clicked)
-
 
     def redraw(self):
         self.delete("1.0", "end")
@@ -58,11 +70,14 @@ class ObjectsView(tkinter.Canvas):
         super().__init__(master=master)
         self.objects_storage = objects_storage
 
-        controller = ObjectsViewController(texts_storage=texts_storage, objects_storage=objects_storage, redraw_callback=redraw_callback)
+        controller = ObjectsViewController(
+            texts_storage=texts_storage,
+            objects_storage=objects_storage,
+            redraw_callback=redraw_callback
+        )
         self.bind("<Button-1>", controller.on_click)
         self.bind("<Motion>", controller.on_motion)
         self.bind("<ButtonRelease-1>", controller.on_unclick)
-
 
     def redraw(self):
         self.delete("all")
@@ -74,4 +89,3 @@ class ObjectsView(tkinter.Canvas):
                 stored_object.bottom_right_y,
                 {}
             )
-
