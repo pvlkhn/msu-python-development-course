@@ -7,27 +7,31 @@ class EditorWindow(tkinter.Frame):
     def __init__(self, objects_storage, texts_storage, master):
         super().__init__(master=master)
 
-        self.left_part = TextView(
+        self.text_part = TextView(
             texts_storage=texts_storage,
             objects_storage=objects_storage,
             redraw_callback=self.redraw,
-            master=master
+            master=self
         )
-        self.right_part = ObjectsView(
+        self.object_part = ObjectsView(
             texts_storage=texts_storage,
             objects_storage=objects_storage,
             redraw_callback=self.redraw,
-            master=master
+            master=self
         )
 
         self.redraw()
 
     def redraw(self):
-        self.left_part.redraw()
-        self.left_part.grid(row=0, column=0, sticky="NWSE")
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1, uniform="yep")
+        self.grid_columnconfigure(1, weight=1, uniform="yep")
 
-        self.right_part.redraw()
-        self.right_part.grid(row=0, column=1, rowspan=2, sticky="NWSE")
+        self.text_part.redraw()
+        self.text_part.grid(row=0, column=0, sticky="NWSE")
+
+        self.object_part.redraw()
+        self.object_part.grid(row=0, column=1, rowspan=2, sticky="NWSE")
 
 
 class TextView(tkinter.Text):
