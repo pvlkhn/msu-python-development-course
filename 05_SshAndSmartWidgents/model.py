@@ -74,7 +74,10 @@ class ObjectsStorage(object):
     def update(self, texts_storage):
         self.objects = []
         for text in texts_storage:
-            self.objects.append(Oval.create_from_string(text))
+            try:
+                self.objects.append(Oval.create_from_string(text))
+            except:
+                texts_storage.set_currrent_text_invalid()
 
     def __iter__(self):
         for stored_object in self.objects:
@@ -111,15 +114,25 @@ class ObjectsStorage(object):
 class TextsStorage(object):
     def __init__(self):
         self.texts = []
+        self.invalid_texts = {}
+        self.current_text = None
 
     def __iter__(self):
         for stored_text in self.texts:
+            self.current_text = stored_text
             yield stored_text
+
+    def is_text_valid(self, text):
+        return text not in self.invalid_texts
 
     def update(self, objects_storage):
         self.texts = []
+        self.invalid_texts = []
         for stored_object in objects_storage:
             self.texts.append(stored_object.serialize_to_string())
 
     def set_texts(self, texts):
         self.texts = texts.strip().split("\n")
+
+    def set_currrent_text_invalid(self):
+        self.invalid_texts.append(self.current_text)

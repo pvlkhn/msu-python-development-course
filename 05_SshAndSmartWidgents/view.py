@@ -1,4 +1,5 @@
 import tkinter
+from tkinter import font
 from controller import ObjectsViewController, TextsViewController
 
 
@@ -44,7 +45,7 @@ class EditorWindow(tkinter.Frame):
 
 class TextView(tkinter.Text):
     def __init__(self, texts_storage, objects_storage, redraw_callback, master=get_master()):
-        super().__init__(master=master)
+        super().__init__(master=master, font=font.Font(family="Consolas", size=14, weight="normal"))
         self.texts_storage = texts_storage
         self.redraw_callback = redraw_callback
         self.controller = TextsViewController(
@@ -53,11 +54,14 @@ class TextView(tkinter.Text):
             redraw_callback=redraw_callback
         )
         self.apply_button = tkinter.Button(master, text="Apply", command=self.apply_clicked)
+        self.tag_config('warning', background="yellow", foreground="red")
+
 
     def redraw(self):
         self.delete("1.0", "end")
         for stored_text in self.texts_storage:
-            self.insert(tkinter.END, stored_text + "\n")
+            is_valid = self.texts_storage.is_text_valid(stored_text);
+            self.insert(tkinter.END, stored_text  + "\n", '' if is_valid else 'warning')
         self.apply_button.grid(row=1, column=0)
 
     def apply_clicked(self):
