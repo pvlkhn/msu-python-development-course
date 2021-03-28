@@ -16,11 +16,11 @@ def get_master():
 
 
 class EditorWindow(tkinter.Frame):
-    def __init__(self, objects_storage, master=get_master()):
+    def __init__(self, objects_storage, texts_storage, master=get_master()):
         super().__init__(master=master)
 
-        self.left_part = TextView(objects_storage=objects_storage, redraw_callback=self.redraw)
-        self.right_part = ObjectsView(objects_storage=objects_storage, redraw_callback=self.redraw)
+        self.left_part = TextView(texts_storage=texts_storage, redraw_callback=self.redraw)
+        self.right_part = ObjectsView(texts_storage=texts_storage, objects_storage=objects_storage, redraw_callback=self.redraw)
 
         self.redraw()
 
@@ -34,24 +34,24 @@ class EditorWindow(tkinter.Frame):
 
 
 class TextView(tkinter.Text):
-    def __init__(self, objects_storage, redraw_callback, master=get_master()):
+    def __init__(self, texts_storage, redraw_callback, master=get_master()):
         super().__init__(master=master)
-        self.objects_storage = objects_storage
+        self.texts_storage = texts_storage
         self.redraw_callback = redraw_callback
 
 
     def redraw(self):
         self.delete("1.0", "end")
-        for stored_object in self.objects_storage:
-            self.insert(tkinter.END, stored_object.serialize_to_string() + "\n")
+        for stored_text in self.texts_storage:
+            self.insert(tkinter.END, stored_text + "\n")
 
 
 class ObjectsView(tkinter.Canvas):
-    def __init__(self, objects_storage, redraw_callback, master=get_master()):
+    def __init__(self, texts_storage, objects_storage, redraw_callback, master=get_master()):
         super().__init__(master=master)
         self.objects_storage = objects_storage
 
-        controller = ObjectsViewController(objects_storage=self.objects_storage, redraw_callback=redraw_callback)
+        controller = ObjectsViewController(texts_storage=texts_storage, objects_storage=objects_storage, redraw_callback=redraw_callback)
         self.bind("<Button-1>", controller.on_click)
         self.bind("<Motion>", controller.on_motion)
         self.bind("<ButtonRelease-1>", controller.on_unclick)

@@ -61,7 +61,7 @@ class Oval(object):
 
 class ObjectsStorage(object):
     def __init__(self):
-        self.stored_objects = []
+        self.objects = []
 
         # store info about prev clicked object
         self.clicked = None
@@ -76,11 +76,11 @@ class ObjectsStorage(object):
         self.clicked = new_object
         self.just_added = new_object
         self.set_hover_pos(new_object.top_left_x, new_object.top_left_y)
-        self.stored_objects.append(new_object)
+        self.objects.append(new_object)
 
 
     def __iter__(self):
-        for stored_object in self.stored_objects:
+        for stored_object in self.objects:
             self.current_iter_object = stored_object
             yield stored_object
 
@@ -116,4 +116,21 @@ class ObjectsStorage(object):
 
     def forget_just_added(self):
         self.just_added = None
+
+
+class TextsStorage(object):
+    def __init__(self):
+        self.texts = []
+
+
+    def __iter__(self):
+        for stored_text in self.texts:
+            yield stored_text
+
+
+    def update(self, objects_storage):
+        self.texts = []
+        for stored_object in objects_storage:
+            self.texts.append(stored_object.serialize_to_string())
+
 

@@ -2,7 +2,8 @@ from model import Oval
 
 
 class ObjectsViewController(object):
-    def __init__(self, objects_storage, redraw_callback):
+    def __init__(self, texts_storage, objects_storage, redraw_callback):
+        self.texts_storage = texts_storage
         self.objects_storage = objects_storage
         self.redraw_callback = redraw_callback
 
@@ -25,6 +26,7 @@ class ObjectsViewController(object):
             prev_clicked.move(event.x - prev_hover_x, event.y - prev_hover_y)
 
         self.objects_storage.set_hover_pos(event.x, event.y)
+        self.texts_storage.update(self.objects_storage)
         self.redraw_callback()
 
 
