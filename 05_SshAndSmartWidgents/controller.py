@@ -1,5 +1,5 @@
 from model import Oval
-
+import datetime
 
 class ObjectsViewController(object):
     def __init__(self, texts_storage, objects_storage, redraw_callback):
@@ -39,6 +39,8 @@ class ObjectsViewController(object):
                 return
 
         self.add_oval(event.x, event.y)
+        self.texts_storage.update(self.objects_storage)
+        self.redraw_callback()
 
     def add_oval(self, center_x, center_y):
         oval = Oval(
@@ -52,12 +54,26 @@ class ObjectsViewController(object):
 
 
 class TextsViewController(object):
-    def __init__(self, texts_storage, objects_storage, redraw_callback):
+    CHANGE_COOLDOWN = datetime.timedelta(seconds=1)
+
+    def __init__(self, texts_storage, objects_storage, redraw_callback, get_texts_callback, after_callback):
         self.texts_storage = texts_storage
         self.objects_storage = objects_storage
         self.redraw_callback = redraw_callback
+        self.get_texts_callback = get_texts_callback
+        self.after_callback = after_callback
 
-    def apply(self, texts):
-        self.texts_storage.set_texts(texts)
+    def apply(self):
+        self.texts_storage.set_texts(self.get_texts_callback())
         self.objects_storage.update(self.texts_storage)
         self.redraw_callback()
+
+    def content_changed(self, event):
+        self.texts_storage.set_last_changed_ts(datetime.datetime.now())
+        self.after_callback(int(TextsViewController.CHANGE_COOLDOWN.total_seconds() * 1000), self.check_content_changed)
+
+    def check_content_changed(self):
+        prev_change_time = self.texts_storage.get_last_changed_ts()
+        cur_time = datetime.datetime.now()
+        if cur_time - prev_change_time > TextsViewController.CHANGE_COOLDOWN:
+            self.apply()

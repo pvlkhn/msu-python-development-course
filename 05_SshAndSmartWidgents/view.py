@@ -34,14 +34,16 @@ class TextView(tkinter.Text):
     def __init__(self, texts_storage, objects_storage, redraw_callback, master):
         super().__init__(master=master, font=font.Font(family="Consolas", size=14, weight="normal"))
         self.texts_storage = texts_storage
-        self.redraw_callback = redraw_callback
-        self.controller = TextsViewController(
+        controller = TextsViewController(
             texts_storage=texts_storage,
             objects_storage=objects_storage,
-            redraw_callback=redraw_callback
+            redraw_callback=redraw_callback,
+            get_texts_callback=lambda : self.get("1.0", tkinter.END),
+            after_callback=self.after
         )
-        self.apply_button = tkinter.Button(master, text="Apply", command=self.apply_clicked)
-        self.tag_config('warning', background="yellow", foreground="red")
+        self.bind("<KeyPress>", controller.content_changed)
+        self.apply_button = tkinter.Button(master, text="Apply", command=controller.apply)
+        self.tag_config('warning', foreground="red")
 
 
     def redraw(self):
@@ -50,10 +52,6 @@ class TextView(tkinter.Text):
             is_valid = self.texts_storage.is_text_valid(stored_text);
             self.insert(tkinter.END, stored_text  + "\n", '' if is_valid else 'warning')
         self.apply_button.grid(row=1, column=0, sticky="WE")
-
-    def apply_clicked(self):
-        texts = self.get("1.0", tkinter.END)
-        self.controller.apply(texts)
 
 
 class ObjectsView(tkinter.Canvas):

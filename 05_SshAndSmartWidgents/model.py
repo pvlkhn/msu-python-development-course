@@ -131,6 +131,7 @@ class TextsStorage(object):
     def __init__(self):
         self.texts = []
         self.invalid_texts = set()
+        self.last_changed_ts = None
 
     def __iter__(self):
         for stored_text in self.texts:
@@ -150,3 +151,9 @@ class TextsStorage(object):
 
     def set_text_invalid(self, text):
         self.invalid_texts.add(text)
+
+    def get_last_changed_ts(self):
+        return self.last_changed_ts
+
+    def set_last_changed_ts(self, ts):
+        self.last_changed_ts = ts
