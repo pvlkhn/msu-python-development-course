@@ -33,10 +33,14 @@ class ObjectsViewController(object):
         self.redraw_callback()
 
     def on_click(self, event):
+        some_clicked = False
         for stored_object in self.objects_storage:
             if stored_object.is_clicked(event.x, event.y):
                 self.objects_storage.set_clicked(stored_object, event.x, event.y)
-                return
+                some_clicked = True
+
+        if some_clicked:
+            return
 
         self.add_oval(event.x, event.y)
         self.texts_storage.update(self.objects_storage)
